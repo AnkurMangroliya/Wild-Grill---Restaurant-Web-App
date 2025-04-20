@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}WildGrill - Your Cart{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-4">Your Cart</h1>
+    
+    {% if cart_items %}
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    {% for item in cart_items %}
+                    <div class="cart-item mb-3 pb-3 border-bottom">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="mb-1">{{ item.name }}</h5>
+                                <p class="text-muted mb-0">Quantity: {{ item.quantity }}</p>
+                                {% if item.special_instructions %}
+                                <p class="text-muted small">Special Instructions: {{ item.special_instructions }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <span class="price">${{ "%.2f"|format(item.price * item.quantity) }}</span>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <a href="{{ url_for('main.remove_from_cart', index=loop.index0) }}" class="btn btn-outline-danger btn-sm">
+                                    <i class="fas fa-trash"></i> Remove
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Order Summary</h5>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Subtotal:</span>
+                        <span class="price">${{ "%.2f"|format(total) }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Tax (13%):</span>
+                        <span class="price">${{ "%.2f"|format(total * 0.13) }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <span class="price">${{ "%.2f"|format(total * 1.13) }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Delivery Information</h5>
+                    <form method="POST" action="{{ url_for('main.place_order') }}">
+                        {{ form.csrf_token }}
+                        
+                        <div class="mb-3">
+                            {{ form.name.label(class="form-label") }}
+                            {{ form.name(class="form-control") }}
+                            {% if form.name.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            {{ form.email(class="form-control") }}
+                            {% if form.email.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.phone.label(class="form-label") }}
+                            {{ form.phone(class="form-control") }}
+                            {% if form.phone.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.phone.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.address.label(class="form-label") }}
+                            {{ form.address(class="form-control", rows="3") }}
+                            {% if form.address.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.address.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.special_instructions.label(class="form-label") }}
+                            {{ form.special_instructions(class="form-control", rows="2") }}
+                        </div>
+
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center">
+        <i class="fas fa-shopping-cart fa-3x mb-3 text-muted"></i>
+        <h3>Your cart is empty</h3>
+        <p class="text-muted">Add some delicious items from our menu!</p>
+        <a href="{{ url_for('main.home') }}" class="btn btn-primary">View Menu</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
