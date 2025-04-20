@@ -33,9 +33,27 @@ def runner(app):
 def test_home_page(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert b"Wild Grill" in response.data
+    # Test navbar brand
+    assert b"WildGrill" in response.data
+    # Test page title
+    assert b"<title>WildGrill - Premium Restaurant</title>" in response.data
+    # Test contact information
+    assert b"123 Restaurant Street" in response.data
+    assert b"(555) 123-4567" in response.data
+    assert b"info@wildgrill.com" in response.data
 
 def test_menu_items_exist(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert b"Menu" in response.data 
+    assert b"Menu" in response.data
+
+def test_static_files_loaded(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    # Test CSS files
+    assert b'href="/static/css/style.css"' in response.data
+    assert b'bootstrap.min.css' in response.data
+    assert b'font-awesome' in response.data
+    # Test JS files
+    assert b'bootstrap.bundle.min.js' in response.data
+    assert b'src="/static/js/main.js"' in response.data 
